@@ -11,37 +11,42 @@ public class Queue_test {
 	int check;
 	int state;
 	int counter=0;
-	Queue_test(int check, int state) {
+	int range;
+	int condition;
+	
+	Queue_test(int check, int state,int range, int condition) {
 		this.check = check;
 		this.state = state;
+		this.range = range;
+		this.condition = condition;
 	}
 
 	Queue<Integer> qe = new LinkedList<Integer>();
 
 	public boolean Queue_function(int new_rssi) {
 		rssi = new_rssi;
-		int i = 0;// ºX¼Ð-§PÂ_60 3¦¸
+		int i = 0;// ï¿½Xï¿½ï¿½-ï¿½Pï¿½_60 3ï¿½ï¿½
 		boolean in_flag = false;
 		qe.add(rssi);
-		Log.d("ªø«×", qe.size() + "");
+		//Log.d("ï¿½ï¿½ï¿½ï¿½", qe.size() + "");
 
 		Iterator it = qe.iterator();
-		if(counter<6)
+		if(counter<range)
 			counter++;
-		if(counter==6){
+		if(counter==range){
 			it.next();
 			it.remove();
 		}
 		while (it.hasNext()) {
-			if (state == 0) {			//³s½u
+			if (state == 0) {			//ï¿½sï¿½u
 				Integer iteratorValue = (Integer) it.next();
 				if (iteratorValue >= check) {
 					i = i + 1;
-					if (i == 3) {
+					if (i == condition) {
 						in_flag = true;
 					}
 				}
-			} else if (state == 1) {	//¤¤Â_
+			} else if (state == 1) {	//ï¿½ï¿½ï¿½_
 				Integer iteratorValue = (Integer) it.next();
 				if (iteratorValue <= check) {
 					i = i + 1;

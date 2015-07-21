@@ -1,6 +1,7 @@
 package com.example.comfirm_app;
 
 import static android.provider.BaseColumns._ID;
+
 import java.io.File;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -50,6 +52,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -358,7 +361,11 @@ public class SCAN_BLE extends Activity {
 	private static final long SCAN_PERIOD = 1500;
 	
 	/************************/
-	int position;
+	int position,new_run_nember,new_range,new_condition,new_rssi_nember;
+	EditText run_nember,range,condition,rssi_nember,delay_nember;
+	int a1;
+	
+	
 	/************************/
 
 	@Override
@@ -371,7 +378,15 @@ public class SCAN_BLE extends Activity {
 		mGattServicesList = (ExpandableListView) findViewById(R.id.gatt_services_list);
 		mConnectionState = (TextView) findViewById(R.id.connection_state);
 		mDataField = (TextView) findViewById(R.id.data_value);
-
+		
+		run_nember = (EditText)findViewById(R.id.run_nember);
+		range = (EditText)findViewById(R.id.range);
+		condition = (EditText)findViewById(R.id.condition);
+		rssi_nember = (EditText)findViewById(R.id.rssi);
+		
+		rssi_nember = (EditText)findViewById(R.id.rssi);
+		
+		
 		/**************************** ble_connect_read&write ***************************/
 
 		mHandler = new Handler();
@@ -400,9 +415,74 @@ public class SCAN_BLE extends Activity {
 	}
 
 	public void start(View v){
+		
+		//要跑的次數
+		if(run_nember.getText().toString().length()!=0){
+			new_run_nember =Integer.parseInt(run_nember.getText().toString());
+		}
+		
+		
+		//長度設定
+		if(range.getText().toString().length()!=0){
+			new_range =Integer.parseInt(range.getText().toString());
+		}
+		else{
+			new_range=5;
+		}
+		
+		//確定次數
+		if(condition.getText().toString().length()!=0){
+			new_condition =Integer.parseInt(condition.getText().toString());
+		}
+		else{
+			new_condition=3;
+		}
+		
+		//rssi強度
+		if(rssi_nember.getText().toString().length()!=0){
+			new_rssi_nember =Integer.parseInt(rssi_nember.getText().toString());
+		}
+		else{
+			new_rssi_nember=-65;
+		}
+		
+		Start();
+	}
+	
+	
+	public void Start(){
 		stop_scan = true;
 		Trade_in = true;
-		check_Duijiang_dialog();
+		
+		try{handler_times.removeCallbacks(updateTimer);}catch(Exception e){}
+		try{handler_times.removeCallbacks(scan_time_runnable);}catch(Exception e){}
+		//try{handler_net.removeCallbacks(updata_state);}catch(Exception e){}
+		try{sec_time.cancel();handler_times.removeCallbacks(runnable_time_success);}catch(Exception e){}
+		try {
+			action_in=new Queue_test(new_rssi_nember,0,new_range,new_condition);
+			sucess_flag=false;
+			Thread.sleep(500);
+			TextView svan_tv = (TextView) findViewById(R.id.Scan_device_tv);
+			svan_tv.setText("掃描裝置中...");
+			mLeDeviceListAdapter = new LeDeviceListAdapter();
+			scan_list.setAdapter(mLeDeviceListAdapter);
+			scanLeDevice(true);
+			LinearLayout beacon_layout = (LinearLayout) findViewById(R.id.beacon_layout);
+			LinearLayout connect_layout = (LinearLayout) findViewById(R.id.connect_layout);
+			beacon_layout.setVisibility(View.GONE);
+			connect_layout.setVisibility(View.VISIBLE);
+			success_flag = false;
+			use_offsetting_dialog();
+			stop_scan = true;
+			write_f=true;
+			times(scan_time_runnable);
+		} catch (Exception e) {
+			Toast.makeText(getApplicationContext(),
+					"使用折抵卷出錯", Toast.LENGTH_SHORT)
+					.show();
+		}
+		
+		
 		listview_item = position;
 		device_name = "";
 	}
@@ -804,33 +884,7 @@ public class SCAN_BLE extends Activity {
 							public void onClick(DialogInterface dialog,
 									int which) {
 
-								try{handler_times.removeCallbacks(updateTimer);}catch(Exception e){}
-								try{handler_times.removeCallbacks(scan_time_runnable);}catch(Exception e){}
-								//try{handler_net.removeCallbacks(updata_state);}catch(Exception e){}
-								try{sec_time.cancel();handler_times.removeCallbacks(runnable_time_success);}catch(Exception e){}
-								try {
-									action_in=new Queue_test(-65,0);
-									sucess_flag=false;
-									Thread.sleep(500);
-									TextView svan_tv = (TextView) findViewById(R.id.Scan_device_tv);
-									svan_tv.setText("掃描裝置中...");
-									mLeDeviceListAdapter = new LeDeviceListAdapter();
-									scan_list.setAdapter(mLeDeviceListAdapter);
-									scanLeDevice(true);
-									LinearLayout beacon_layout = (LinearLayout) findViewById(R.id.beacon_layout);
-									LinearLayout connect_layout = (LinearLayout) findViewById(R.id.connect_layout);
-									beacon_layout.setVisibility(View.GONE);
-									connect_layout.setVisibility(View.VISIBLE);
-									success_flag = false;
-									use_offsetting_dialog();
-									stop_scan = true;
-									write_f=true;
-									times(scan_time_runnable);
-								} catch (Exception e) {
-									Toast.makeText(getApplicationContext(),
-											"使用折抵卷出錯", Toast.LENGTH_SHORT)
-											.show();
-								}
+								
 							}
 						}).setNeutralButton("取消", null).show();
 		
@@ -840,6 +894,7 @@ public class SCAN_BLE extends Activity {
 	AlertDialog dialog;
 	int time_sec = 10;
 	public void use_offsetting_dialog() {
+		
 		AlertDialog.Builder use_offsetting_dialog_builder = new AlertDialog.Builder(
 				SCAN_BLE.this);
 		LayoutInflater inflater = LayoutInflater.from(SCAN_BLE.this);
@@ -887,11 +942,11 @@ public class SCAN_BLE extends Activity {
 		try{handler_times.removeCallbacks(scan_time_runnable);}catch(Exception e){}
 		//try{handler_net.removeCallbacks(updata_state);}catch(Exception e){}
 		sucess_flag=true;
-		time_sec = 120;
+		time_sec = 20;
 		dialog.dismiss();
 		dialog_suc();
 		dis_state=false;
-		action_out=new Queue_test(-68,1);
+		action_out=new Queue_test(-68,1,new_range,new_condition);
 		runnable_time_success = new Runnable() {
 			@Override
 			public void run() {
@@ -986,6 +1041,14 @@ public class SCAN_BLE extends Activity {
 		beacon_layout.setVisibility(View.VISIBLE);
 		connect_layout.setVisibility(View.GONE);
 		
+		if(new_run_nember==0){}
+		else{
+			new_run_nember--;
+			Toast.makeText(getApplicationContext(), new_run_nember+"",Toast.LENGTH_SHORT).show();
+			//重複執行 直到減到0
+			Start();
+		}
+		
 	}
 
 	public void set_dialog(View v) {
@@ -1036,7 +1099,7 @@ public class SCAN_BLE extends Activity {
 	
 	
 	public void rescan(){
-		action_in=new Queue_test(-65,0);
+		action_in=new Queue_test(new_rssi_nember,0,new_range,new_condition);
 		if(!sucess_flag){
 			TextView svan_tv = (TextView) findViewById(R.id.Scan_device_tv);
 			LinearLayout beacon_layout = (LinearLayout) findViewById(R.id.beacon_layout);

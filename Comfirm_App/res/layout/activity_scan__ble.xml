@@ -18,8 +18,15 @@
     
 </LinearLayout>
 
+<TextView
+    android:id="@+id/textView5"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="30dp"
+    android:text="兌換次數" />
+
 <EditText
-    android:id="@+id/editText1"
+    android:id="@+id/run_nember"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:ems="10" >
@@ -27,19 +34,67 @@
     <requestFocus />
 </EditText>
 
-<EditText
-    android:id="@+id/editText2"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:ems="10"
-    android:inputType="textPersonName" />
-
 <Button
     android:id="@+id/button1"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:onClick="start"
     android:text="Button" />
+
+<TextView
+    android:id="@+id/textView1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="設定" />
+
+<TextView
+    android:id="@+id/textView2"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="range" />
+
+<EditText
+    android:id="@+id/range"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:ems="10"
+    android:inputType="textPersonName" />
+
+<TextView
+    android:id="@+id/textView3"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="確認次數" />
+
+<EditText
+    android:id="@+id/condition"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:ems="10" />
+
+<TextView
+    android:id="@+id/textView4"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="rssi強度" />
+
+<EditText
+    android:id="@+id/rssi"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:ems="10" />
+
+<TextView
+    android:id="@+id/textView6"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="結束兌換與開始兌換delay的時間" />
+
+<EditText
+    android:id="@+id/delay_nember"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:ems="10" />
 
 </LinearLayout>
 
